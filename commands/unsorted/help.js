@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 module.exports = {
     usage: 'help [command]',
     aliases: [],
-    category: 'Information',
+    category: 'Unsorted',
     autocomplete: async (interaction, client, db) => {
         const value = interaction.options.getFocused().toLowerCase();
         let choices = client.commands.map(x => x.data.name);
