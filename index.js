@@ -18,6 +18,7 @@ client.db = new QuickDB();
 
 client.toNumber = require('./functions/ToNumber');
 client.errorEmbed = require('./functions/ErrorEmbed');
+client.throwError = require('./functions/ThrowError');
 
 const player = new Player(client);
 player.extractors.loadDefault(ext => ext == 'YouTubeExtractor');

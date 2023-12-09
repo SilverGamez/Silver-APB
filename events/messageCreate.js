@@ -1,3 +1,5 @@
+const chalk = require('chalk').default;
+
 module.exports = {
     name: 'messageCreate',
     once: false,
@@ -23,8 +25,7 @@ module.exports = {
 
                 command.run(message, args, client, db);
             } catch (error) {
-                console.log(error);
-                message.channel.send("Something went wrong. Try again later.");
+                client.throwError(error);
             }
         }
     }

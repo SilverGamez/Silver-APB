@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 module.exports = {
     usage: 'createembed <channel> [options]',
     aliases: [],
-    category: 'Unsorted',
+    category: 'Moderation',
     run: async (interaction, client, db) => {
         const channel = interaction.options.getChannel("channel") || null;
         const title = interaction.options.getString("title") || null;

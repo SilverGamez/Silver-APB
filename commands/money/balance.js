@@ -14,7 +14,7 @@ module.exports = {
 
         const embed = new Discord.EmbedBuilder()
             .setTitle(`${name}'s balance`)
-            .setDescription(`Purse: \`$${purseBalance}\`` + '\n' + `Bank: \`$${bankBalance}\``)
+            .setDescription(`Purse: \`$${client.toNumber(purseBalance)}\`` + '\n' + `Bank: \`$${client.toNumber(bankBalance)}\``)
             .setColor('Blurple')
 
         interaction.reply({

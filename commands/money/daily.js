@@ -1,5 +1,6 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const moment = require('moment');
 
 module.exports = {
     usage: 'daily',
@@ -12,7 +13,8 @@ module.exports = {
         let dailyCooldown = await db.get(`${interaction.user.id}.cooldowns.daily`);
 
         if (dailyCooldown !== null && timeout - (Date.now() - dailyCooldown) > 0) {
-            return client.errorEmbed(interaction, 'You have already claimed your daily reward in the past 24 hours.', 'Red');
+            const time = Math.floor(new Date(moment(dailyCooldown).add(timeout, 'ms').toDate()).getTime() / 1000);
+            client.errorEmbed(interaction, `You can use this command again <t:${time}:R>`, 'Red');
         } else {
             const embed = new Discord.EmbedBuilder()
                 .setTitle('Daily reward claimed')

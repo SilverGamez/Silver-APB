@@ -1,13 +1,15 @@
+const chalk = require('chalk').default;
+
 module.exports = {
     name: 'interactionCreate',
     once: false,
     run: async (interaction, client, db) => {
         if (interaction.isAutocomplete()) {
             const command = client.commands.get(interaction.commandName);
-            if(!command) return;
+            if (!command) return;
 
             try {
-               await command.autocomplete(interaction, client, db);
+                await command.autocomplete(interaction, client, db);
             } catch (error) {
                 console.log(error);
             }
@@ -16,7 +18,7 @@ module.exports = {
         if (interaction.isButton()) {
             if (interaction.customId == 'delete_eval') return interaction.message.delete();
         }
-        
+
         if (!interaction.isCommand()) return;
 
         const commandName = interaction.commandName
@@ -28,8 +30,8 @@ module.exports = {
 
         try {
             await command.run(interaction, client, db);
-        } catch (e) {
-            console.log(e);
+        } catch (error) {
+            client.throwError(error);
         }
     }
 }
