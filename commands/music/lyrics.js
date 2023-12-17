@@ -2,11 +2,17 @@ const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
 const lyricsExtractor = require('@discord-player/extractor').lyricsExtractor;
 const useQueue = require('discord-player').useQueue;
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'lyrics [songname]',
     aliases: [],
     category: 'Music',
+     /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         const lyricsFinder = lyricsExtractor();
 
@@ -22,19 +28,15 @@ module.exports = {
 
         const trimmedLyrics = lyrics.lyrics.substring(0, 1997);
 
-        const embed = new Discord.EmbedBuilder()
-            .setTitle(lyrics.title)
-            .setURL(lyrics.url)
-            .setThumbnail(lyrics.thumbnail)
-            .setAuthor({
-                name: lyrics.artist.name,
-                iconURL: lyrics.artist.image,
-                url: lyrics.artist.url
-            })
-            .setDescription(trimmedLyrics.length == 1997 ? `${trimmedLyrics}...` : trimmedLyrics)
-            .setColor('Blurple')
-
-        interaction.reply({embeds: [embed]});
+        client.createEmbed(interaction, {
+            title: lyrics.title,
+            titleUrl: lyrics.url,
+            thumbnail: lyrics.thumbnail,
+            authorName: lyrics.artist.name,
+            authorIcon: lyrics.artist.image,
+            authorUrl: lyrics.artist.url,
+            description: trimmedLyrics.length == 1997 ? `${trimmedLyrics}...` : trimmedLyrics
+        });
     }
 }
 

@@ -1,10 +1,16 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'withdraw <amount>',
     aliases: [],
     category: 'Money',
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         const bankBalance = await db.get(`${interaction.user.id}.bank`) || 0;
         const amount = interaction.options.getNumber("amount");
@@ -14,13 +20,9 @@ module.exports = {
         await db.sub(`${interaction.user.id}.bank`, amount);
         await db.add(`${interaction.user.id}.purse`, amount);
 
-        const embed = new Discord.EmbedBuilder()
-            .setTitle('Withdraw complete')
-            .setDescription(`Withdrew $${client.toNumber(amount)} from the bank.`)
-            .setColor('Blurple')
-
-        interaction.reply({
-            embeds: [embed]
+        client.createEmbed(interaction, {
+            title: 'Withdraw complete',
+            description: `Withdrew $${client.toNumber(amount)} from the bank.`
         });
     }
 }

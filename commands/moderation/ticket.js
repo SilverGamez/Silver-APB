@@ -1,17 +1,23 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'ticket <send/setup/remove>',
     aliases: [],
     category: 'Moderation',
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         const subcommand = interaction.options.getSubcommand();
         const data = await db.get(`${interaction.guild.id}.ticketSystem`);
 
         switch (subcommand) {
             case 'send':
-                if (!data) return interaction.reply({
+                if (!data) return client.createEmbed(interaction, {
                     content: `⚠️ You have to setup up the ticket system with \`/ticket setup\` before using this command.`,
                     ephemeral: true
                 });
@@ -50,7 +56,7 @@ module.exports = {
 
                 break;
             case 'remove':
-                if (!data) return interaction.reply({
+                if (!data) return client.createEmbed(interaction, {
                     content: `⚠️ You have to setup up the ticket system with \`/ticket setup\` before using this command.`,
                     ephemeral: true
                 });
@@ -63,7 +69,7 @@ module.exports = {
                 }
                 break;
             case 'setup':
-                if (data) return interaction.reply({
+                if (data) return client.createEmbed(interaction, {
                     content: `⚠️ You already have a ticket category set up.`,
                     ephemeral: true
                 });

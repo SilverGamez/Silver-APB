@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const util = require('util');
 const fs = require('fs');
+const QuickDB = require('quick.db').QuickDB;
 
 const Button = new Discord.ButtonBuilder()
     .setCustomId('delete_eval')
@@ -22,6 +23,11 @@ module.exports = {
         category: "Botdev",
         botdevonly: true
     },
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.Message} message 
+     * @param {Array} args
+     */
     run: async (message, args, client, db) => {
         const code = args.join(" ");
         const name = message.author.globalName || message.author.username;

@@ -1,10 +1,16 @@
 const Discord = require('discord.js');
 const Permissions = Discord.PermissionsBitField.Flags;
 const transcript = require('discord-html-transcripts');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     name: 'interactionCreate',
     once: false,
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         if (interaction.customId == 'ticketCreateSelect') {
             const modal = new Discord.ModalBuilder()
@@ -39,8 +45,8 @@ module.exports = {
             const user = interaction.user;
             const data = await db.get(`${interaction.guild.id}.ticketSystem`);
 
-            if (!data) return interaction.reply({
-                content: 'Looks like you found this message but the ticket system is not setup here',
+            if (!data) return client.createEmbed(interaction, {
+                content: `⚠️ Looks like you found this message but the ticket system is not setup here`,
                 ephemeral: true
             });
             else {
@@ -87,6 +93,7 @@ module.exports = {
                     embeds: [embed],
                     components: [button]
                 });
+
                 interaction.reply({
                     content: `✨ Your ticket has been opened in ${channel}`,
                     ephemeral: true
@@ -121,8 +128,13 @@ module.exports = {
             interaction.reply(`🔒 Closing this ticket...`);
 
             setTimeout(async () => {
+                const embed = client.createEmbed(interaction, {
+                    description: `📢 You are receiving this notifcation because your ticket in ${interaction.guild.name} has been closed for: \`${reason}\``,
+                    returnEmbed: true
+                });
+
                 await channel.delete().catch(err => {});
-                await member.send(`📢 You are receiving this notifcation because your ticket in ${interaction.guild.name} has been closed for: \`${reason}\``).catch(err => {});
+                await member.send({ embeds: [embed] }).catch(err => {});
             }, 5000);
         }
 
@@ -137,11 +149,10 @@ module.exports = {
                 content: `🌏 Your ticket transcript:`,
                 files: [file]
             });
-            const message = `📜 **Here is your [ticket transcript](https://mahto.id/chat-exporter?url=${msg.attachments.first()?.url}) from ${interaction.guild.name}!**`;
 
             await msg.delete().catch(err => {});
-            interaction.reply({
-                content: message,
+            client.createEmbed(interaction, {
+                description: `📜 **Here is your [ticket transcript](https://mahto.id/chat-exporter?url=${msg.attachments.first()?.url}) from ${interaction.guild.name}!**`,
                 ephemeral: true
             });
         }

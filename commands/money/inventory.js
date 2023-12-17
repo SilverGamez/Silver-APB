@@ -1,10 +1,16 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'inventory',
     aliases: [],
     category: 'Money',
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         const user = interaction.options.getUser("user") || interaction.user;
         const items = client.config.items;
@@ -12,13 +18,9 @@ module.exports = {
         const ownedItems = await db.get(`${user.id}.items`) || {};
         const itemMap = Object.keys(ownedItems).map(x => items[x].name).join('\n') || "No items in inventory.";
 
-        const embed = new Discord.EmbedBuilder()
-            .setTitle('Inventory')
-            .setDescription(`**Items**\n\n\`${itemMap}\``)
-            .setColor('Blurple')
-
-        interaction.reply({
-            embeds: [embed]
+        client.createEmbed(interaction, {
+            title: 'Iventory',
+            description: `**Items**\n\n\`${itemMap}\``
         });
     }
 }

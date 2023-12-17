@@ -1,11 +1,17 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const useMainPlayer = require('discord-player').useMainPlayer;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'play <query>',
     aliases: [],
     category: 'Music',
+     /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         const player = useMainPlayer();
         const channel = interaction.member.voice.channel;
@@ -17,21 +23,24 @@ module.exports = {
         try {
             const { track } = await player.play(channel, query, {
                 nodeOptions: {
-                    metadata: interaction, 
+                    metadata: interaction,
                     volume: 50
                 }
             });
-            
-            const embed = new Discord.EmbedBuilder()
-                .setTitle('Added song to queue')
-                .setDescription(`[${track.title}](${track.url})`)
-                .setThumbnail(track.thumbnail)
-                .setColor('Blurple')
-                .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
 
-            return interaction.followUp({ embeds: [ embed] });
+            const embed = client.createEmbed(interaction, {
+                title: 'Added song to queue',
+                description: `[${track.title}](${track.url})`,
+                thumbnail: track.thumbnail,
+                returnEmbed: true
+            });
+
+            return interaction.followUp({
+                embeds: [embed]
+            });
         } catch (e) {
-            return client.errorEmbed(interaction, `Something went wrong: ${e}`, 'Red');
+            client.throwError(e);
+            client.errorEmbed(interaction, `Something went wrong: ${e}`);
         }
     }
 }

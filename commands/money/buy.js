@@ -1,10 +1,16 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'buy',
     aliases: [],
     category: 'Money',
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         const items = client.config.items;
 
@@ -40,29 +46,20 @@ module.exports = {
                 const itemName = Object.entries(items).map(x => x[0]).find(x => x == i.values[0]);
                 const item = items[itemName];
 
-                const BoughtEmbed = new Discord.EmbedBuilder()
-                    .setDescription(`Bought ${item.name} ${item.emoji} for $${client.toNumber(item.price)}`)
-                    .setColor('Blurple')
-                    .setFooter({
-                        text: interaction.guild.name,
-                        iconURL: interaction.guild.iconURL()
-                    })
+                const BoughtEmbed = client.createEmbed(interaction, {
+                    description: `Bought ${item.name} ${item.emoji} for $${client.toNumber(item.price)}`,
+                    returnEmbed: true
+                });
 
-                const MissingMoney = new Discord.EmbedBuilder()
-                    .setDescription(`You don't have enough money to buy this`)
-                    .setColor('Red')
-                    .setFooter({
-                        text: interaction.guild.name,
-                        iconURL: interaction.guild.iconURL()
-                    })
+                const MissingMoney = client.createEmbed(interaction, {
+                    description: "You don't have enough money to buy this",
+                    returnEmbed: true
+                });
 
-                const AlreadyOwned = new Discord.EmbedBuilder()
-                    .setDescription(`You already own this tiem.`)
-                    .setColor('Red')
-                    .setFooter({
-                        text: interaction.guild.name,
-                        iconURL: interaction.guild.iconURL()
-                    })
+                const AlreadyOwned = client.createEmbed(interaction, {
+                    description: "You already own this tiem.",
+                    returnEmbed: true
+                });
 
                 if (item.price > await db.get(`${interaction.user.id}.purse`)) return message.edit({
                     embeds: [MissingMoney],
@@ -85,7 +82,8 @@ module.exports = {
                 db.set(`${interaction.user.id}.items.${i.values[0]}`, true);
             });
         } catch (error) {
-            client.throwError(error);
+            client.throwError(e);
+            client.errorEmbed(interaction, `Something went wrong: ${e}`);
         }
     }
 }

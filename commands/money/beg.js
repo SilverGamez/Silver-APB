@@ -1,10 +1,16 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'beg',
     aliases: [],
     category: 'Money',
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         let Money = Math.floor(Math.random() * 2500) + 1;
         let randomMoney = client.toNumber(Money);
@@ -56,15 +62,9 @@ module.exports = {
         const randomReply = replies[Math.floor(Math.random() * replies.length) + 0];
         const randomPerson = people[Math.floor(Math.random() * people.length) + 0];
 
-        const embed = new Discord.EmbedBuilder()
-            .setAuthor({
-                name: randomPerson
-            })
-            .setDescription(randomReply)
-            .setColor('Blurple')
-
-        interaction.reply({
-            embeds: [embed]
+        client.createEmbed(interaction, {
+            title: randomPerson,
+            description: randomReply
         });
 
         if (randomReply == 'No money for you!') return;

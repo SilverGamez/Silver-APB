@@ -1,20 +1,22 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'shop',
     aliases: [],
     category: 'Money',
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (interaction, client, db) => {
         const description = Object.entries(client.config.items).map(v => `${v[1].name} ${v[1].emoji} [$${client.toNumber(v[1].price)}]: ${v[1].description}`).join('\n');
 
-        const embed = new Discord.EmbedBuilder()
-            .setTitle('Shop')
-            .setDescription(description)
-            .setColor('Blurple')
-
-        interaction.reply({
-            embeds: [embed]
+        client.createEmbed(interaction, {
+            title: 'Shop',
+            description: description
         });
     }
 }

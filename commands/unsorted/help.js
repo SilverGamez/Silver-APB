@@ -1,10 +1,16 @@
 const SlashCommand = require('@discordjs/builders').SlashCommandBuilder;
 const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     usage: 'help [command]',
     aliases: [],
     category: 'Unsorted',
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     autocomplete: async (interaction, client, db) => {
         const value = interaction.options.getFocused().toLowerCase();
         let choices = client.commands.map(x => x.data.name);
@@ -27,11 +33,11 @@ module.exports = {
             if (Array.isArray(aliases) && aliases.length) {
                 aliases = command.aliases.join(", ");
             } else {
-                aliases = 'There is no aliases for this command'
+                aliases = 'Aliases are currently not supported.'
             }
 
             let botdevonly = 'false';
-            if (command.botdevonly) botdevonly = 'true';
+            if (command.category == "botdev") botdevonly = 'true';
 
             const embed = new Discord.EmbedBuilder()
                 .setTitle(`Help for ${command.data.name}`)
@@ -65,21 +71,18 @@ module.exports = {
 
             let prefix = await db.get(`${interaction.guild.id}.prefix`) || client.config.prefix
 
-            let emx = new Discord.EmbedBuilder()
-                .setColor("Blurple")
-                .setAuthor({
-                    name: `Do ${prefix}help <command name> for more information about a command.`
-                })
-                .setFooter({
-                    text: interaction.guild.name,
-                    iconURL: interaction.guild.iconURL()
-                })
+            let emx = client.createEmbed(interaction, {
+                authorName: `Do ${prefix}help <command name> for more information about a command.`,
+                returnEmbed: true
+            });
 
             let com = {};
 
             commands.forEach(comm => {
                 let category = comm.category || "Unknown";
                 let name = comm.data.name;
+
+                if (category == "botdev") return;
 
                 if (!com[category]) {
                     com[category] = [];
@@ -90,7 +93,7 @@ module.exports = {
 
             for (const [key, value] of Object.entries(com)) {
                 let category = key.charAt(0).toUpperCase() + key.slice(1);
-                let desc = value.sort().map((x) => `\`➣ ${x}\`\n`).join('');
+                let desc = value.sort().map((x) => `\`➣ ${x}\` `).join('');
 
                 emx.addFields({
                     name: `${category}`,

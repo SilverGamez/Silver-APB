@@ -1,8 +1,15 @@
 const chalk = require('chalk').default;
+const Discord = require('discord.js');
+const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
     name: 'messageCreate',
     once: false,
+    /**
+     * @param {Discord.Client} client 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {QuickDB} db
+     */
     run: async (message, client, db) => {
         if (message.author.bot) return;
         if (!message.guild) return message.channel.send("Commands are disabled in dms.");

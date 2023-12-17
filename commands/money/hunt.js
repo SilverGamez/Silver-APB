@@ -4,7 +4,7 @@ const moment = require('moment');
 const QuickDB = require('quick.db').QuickDB;
 
 module.exports = {
-    usage: 'dig',
+    usage: 'hunt',
     aliases: [],
     category: 'Money',
     /**
@@ -13,28 +13,28 @@ module.exports = {
      * @param {QuickDB} db
      */
     run: async (interaction, client, db) => {
-        const randomAmount = Math.floor(Math.random() * 10000) + 1;
+        const randomAmount = Math.floor(Math.random() * 15000) + 1;
 
         const timeout = 300000;
-        const cooldown = await db.get(`${interaction.user.id}.cooldowns.dig`);
+        const cooldown = await db.get(`${interaction.user.id}.cooldowns.hunt`);
 
-        const shovel = await db.get(`${interaction.user.id}.items.shovel`);
-        if (!shovel) return client.errorEmbed(interaction, 'You do not own a shovel.', 'Red');
+        const shotgun = await db.get(`${interaction.user.id}.items.shotgun`);
+        if (!shotgun) return client.errorEmbed(interaction, 'You do not own a shotgun.', 'Red');
 
         if (cooldown !== null && timeout - (Date.now() - cooldown) > 0) {
             const time = Math.floor(new Date(moment(cooldown).add(timeout, 'ms').toDate()).getTime() / 1000);
             client.errorEmbed(interaction, `You can use this command again <t:${time}:R>`, 'Red');
         } else {
             client.createEmbed(interaction, {
-                description: `${client.config.items.shovel.emoji} You dug and found $${client.toNumber(randomAmount)}.`
+                description: `${client.config.items.shotgun.emoji} You went hunting and found $${client.toNumber(randomAmount)}`
             });
 
             db.add(`${interaction.user.id}.purse`, randomAmount);
-            db.set(`${interaction.user.id}.cooldowns.dig`, Date.now());
+            db.set(`${interaction.user.id}.cooldowns.hunt`, Date.now());
         }
     }
 }
 
 module.exports.data = new SlashCommand()
-    .setName("dig")
-    .setDescription("Dig for money")
+    .setName("hunt")
+    .setDescription("Hunt for money")
