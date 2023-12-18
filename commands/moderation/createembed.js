@@ -95,11 +95,13 @@ module.exports = {
 
         const collector = reponse.createMessageComponentCollector({
             componentType: Discord.ComponentType.StringSelect,
+            filter: m => m.user.id == interaction.user.id,
             time: 600000
         }); // 10 minutes
 
         const collector2 = reponse.createMessageComponentCollector({
             componentType: Discord.ComponentType.Button,
+            filter: m => m.user.id == interaction.user.id,
             time: 600000
         }); // 10 minutes
 
@@ -405,3 +407,4 @@ module.exports = {
 module.exports.data = new SlashCommand()
     .setName("createembed")
     .setDescription("Create an embed")
+    .setDefaultMemberPermissions(Discord.PermissionsBitField.Flags.Administrator)

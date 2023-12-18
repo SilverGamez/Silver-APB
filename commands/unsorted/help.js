@@ -69,10 +69,8 @@ module.exports = {
         } else {
             let commands = client.commands;
 
-            let prefix = await db.get(`${interaction.guild.id}.prefix`) || client.config.prefix
-
             let emx = client.createEmbed(interaction, {
-                authorName: `Do ${prefix}help <command name> for more information about a command.`,
+                authorName: `Do /help <command name> for more information about a command.`,
                 returnEmbed: true
             });
 

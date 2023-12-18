@@ -7,8 +7,6 @@ module.exports = {
     once: true,
     /**
      * @param {Discord.Client} client 
-     * @param {Discord.CommandInteraction} interaction 
-     * @param {QuickDB} db
      */
     run: async (client) => {
         console.log(chalk.red("[BOT]") + " Bot is online.");
