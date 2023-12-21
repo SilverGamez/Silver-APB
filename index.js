@@ -29,5 +29,3 @@ player.extractors.loadDefault(ext => ext == 'YouTubeExtractor');
 });
 
 client.login(config.token);
-
-module.exports.db = client.db;
